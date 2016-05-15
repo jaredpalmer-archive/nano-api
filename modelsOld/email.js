@@ -2,23 +2,23 @@ const db = require('../db')
 const joi = require('joi')
 
 class Email {
-  constructor({ subject, preheader }) {
+  constructor ({ subject, preheader }) {
     this.subject = subject
     this.preheader = preheader
     this.save = this.save.bind(this)
   }
 
-  save() {
+  save () {
     const session = db.session()
     return session.run(
       'CREATE (e:Email) SET e += { props } RETURN e', {
-      props: {
-        subject: this.subject,
-        preheader: this.preheader
-      }
-    }).then(res => {
-        session.close()
-        return this
+        props: {
+          subject: this.subject,
+          preheader: this.preheader
+        }
+      }).then(res => {
+      session.close()
+      return this
     })
   }
 }
@@ -33,7 +33,7 @@ const manyEmails = (records) => {
 
 Email.findById = (emailId) => {
   const session = db.session()
-  return session.run('MATCH (e:Email {id: { emailId } }) RETURN e', { emailId })
+  return session.run('MATCH (e:Email {id: { emailId } }) RETURN e', { emailId})
     .then(res => {
       session.close()
       return singleEmail(res.records)
@@ -42,7 +42,7 @@ Email.findById = (emailId) => {
 
 Email.getAll = ({ limit = 25 }) => {
   const session = db.session()
-  return session.run('MATCH (e:Email) RETURN e LIMIT {limit}', { limit })
+  return session.run('MATCH (e:Email) RETURN e LIMIT { limit }', { limit: limit})
     .then(res => {
       session.close()
       return manyEmails(res.records)
@@ -51,9 +51,9 @@ Email.getAll = ({ limit = 25 }) => {
 
 Email.create = (props) => {
   const session = db.session()
-  return session.run(`CREATE (e:Email) SET e += { props } RETURN e`, { props }).then(res => {
-      session.close()
-      return singleEmail(res.records[0])
+  return session.run('CREATE (e:Email) SET e += { props } RETURN e', { props}).then(res => {
+    session.close()
+    return singleEmail(res.records[0])
   })
 }
 

@@ -1,5 +1,7 @@
-const neo4j = require('neo4j-driver').v1
+import neo4j from 'neo4j'
+import Bluebird from 'bluebird'
+const db = new neo4j.GraphDatabase('http://neo4j:neo4j@localhost:7474')
 
-const driver = neo4j.driver("bolt://localhost", neo4j.auth.basic("neo4j", "neo4j"))
+db.cypher = Bluebird.promisify(db.cypher)
 
-module.exports = driver
+export default db

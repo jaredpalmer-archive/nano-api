@@ -1,25 +1,27 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const User = require('../models/user')
-const Email = require('../models/email')
-const uuid = require('node-uuid')
+import express from 'express'
+import bodyParser from 'body-parser'
+import uuid from 'node-uuid'
+import morgan from 'morgan'
+import emailRoutes from '../email/routes'
 
-// function server() {
 const server = express()
 
 server.use(bodyParser.json())
-server.use(bodyParser.urlencoded({ extended: false }))
+server.use(bodyParser.urlencoded({ extended: true }))
+server.use(morgan('dev'))
+
 server.get('/', (req, res) => {
   res.send('yolo')
 })
-// const emailId = uuid.v4()
-const e = new Email({
-  subject: 'Yahoo is dead!',
-  preheader: 'This actually happened!'
-})
 
-e.save().then((email) => console.log(email))
+server.use('/v1.0/emails', emailRoutes)
 
+export default server
+
+// return server
+// }
+//
+// module.exports = server
 // Email.create({
 //   id: emailId,
 //   subject: 'Yahoo is dead!',
@@ -48,9 +50,3 @@ e.save().then((email) => console.log(email))
 //   })
 //   .catch(e => console.log(e))
 //
-
-
-// return server
-// }
-//
-// module.exports = server
