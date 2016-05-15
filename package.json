@@ -1,0 +1,37 @@
+{
+  "name": "twork-api",
+  "version": "1.0.0",
+  "description": "wip",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaredpalmer/twork-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaredpalmer/twork-api/issues"
+  },
+  "homepage": "https://github.com/jaredpalmer/twork-api#readme",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "compression": "^1.6.2",
+    "express": "^4.13.4",
+    "express-jwt": "^3.4.0",
+    "helmet": "^2.0.0",
+    "jackrabbit": "^4.3.0",
+    "joi": "^8.1.0",
+    "jsonwebtoken": "^6.2.0",
+    "logfmt": "^1.2.0",
+    "neo4j": "^2.0.0-RC2",
+    "neo4j-driver": "^1.0.1",
+    "node-neo4j": "^2.0.3",
+    "node-uuid": "^1.4.7",
+    "throng": "^4.0.0"
+  }
+}
