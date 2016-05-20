@@ -3,7 +3,8 @@ import bodyParser from 'body-parser'
 import uuid from 'node-uuid'
 import morgan from 'morgan'
 import emailRoutes from '../email/routes'
-
+import http from 'http'
+import config from '../config'
 const server = express()
 
 server.use(bodyParser.json())
@@ -16,7 +17,7 @@ server.get('/', (req, res) => {
 
 server.use('/v1.0/emails', emailRoutes)
 
-export default server
+http.createServer(server).listen(5000)
 
 // return server
 // }
