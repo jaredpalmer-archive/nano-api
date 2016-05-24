@@ -14,6 +14,7 @@ function api () {
   })
 
   server.use('/v1.0/users', userRoutes)
+
   return server
 }
 

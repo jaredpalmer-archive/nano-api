@@ -1,6 +1,6 @@
-/* global describe it afterEach after beforeEach */
 process.env.NODE_ENV = 'test'
 
+import { describe, it, beforeEach, afterEach, after } from 'mocha'
 import { expect } from 'chai'
 import db from '../db'
 import User from './model'
@@ -34,12 +34,14 @@ describe('User Model', () => {
     }).then(() => done())
   })
 
+  // clean up after each test
   afterEach(done => {
     db.cypher({
       query: 'MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n, r'
     }).then(() => done())
   })
 
+  // clean up DB
   after(done => {
     db.cypher({
       query: 'MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n, r'
@@ -57,7 +59,8 @@ describe('User Model', () => {
         User.create(props).then(user => {
           // console.log(user)
           expect(user.username).to.be.equal('alexis')
-          expect(user.password).to.be.equal('neo4j')
+          expect(user.password).to.be.a('string')
+          expect(user.password).to.not.be.equal('neo4j')
           expect(user.email).to.be.equal('alexis@palmer.net')
           done()
         }).catch(e => done(e))
@@ -68,6 +71,7 @@ describe('User Model', () => {
       it('should get a user', done => {
         User.get('jared').then(user => {
           expect(user.username).to.be.equal('jared')
+          expect(user.password).to.be.a('string')
           expect(user.password).to.be.equal('neo4j')
           expect(user.email).to.be.equal('jared@palmer.net')
           done()

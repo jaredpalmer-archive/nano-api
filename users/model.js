@@ -4,13 +4,14 @@ import Promise from 'bluebird'
 import uuid from 'node-uuid'
 import slug from 'slug'
 import Post from '../posts/model'
+import bcrypt from 'bcrypt'
 
 Joi.validate = Promise.promisify(Joi.validate)
 
 class User {
   constructor (node) {
     this.username = node.username
-    this.password = node.password
+    this._password = node.password
     this.email = node.email
 
     this.update = this.update.bind(this)
@@ -18,6 +19,18 @@ class User {
     this.unfollow = this.unfollow.bind(this)
     this.like = this.like.bind(this)
     this.post = this.post.bind(this)
+  }
+
+  get password () {
+    return this._password
+  }
+
+  set password (value) {
+
+  }
+
+  verifyPassword (password) {
+    return bcrypt.compareSync(password, this.password)
   }
 
   update (props) {
@@ -132,6 +145,9 @@ User.create = (props) => {
   const query = `
     CREATE (user:User { props })
     RETURN user`
+  const salt = bcrypt.genSaltSync(10)
+  const hash = bcrypt.hashSync(props.password, salt)
+  props.password = hash
   return Joi.validate(props, UserSchema)
     .then(props => db.cypher({ query, params: { props }, lean: true }))
     .then(results => new User(results[0].user))
