@@ -5,50 +5,53 @@ import chaiAsPromised from 'chai-as-promised'
 import chaiHttp from 'chai-http'
 import db from '../db'
 import User from './model'
-import server from '../server'
-
-chai.use(chaiHttp)
-chai.use(chaiAsPromised)
+import api from '../api'
+const server = api()
+//
+// chai.use(chaiHttp)
+// chai.use(chaiAsPromised)
 
 describe('User Model', () => {
 
   // start with a fresh DB
   beforeEach(done => {
+    const query = `
+      CREATE (uj:User {
+        username: 'jared',
+        password: 'neo4j',
+        email: 'jared@palmer.net'
+      })
+      CREATE (ub:User {
+        username: 'brent',
+        password: 'neo4j',
+        email: 'brent@palmer.net'
+      })
+      CREATE (ua:User {
+        username: 'alexis',
+        password: 'neo4j',
+        email: 'alexis@palmer.net'
+      })
+      CREATE (uj)-[r:FOLLOWS]->(ub)
+      CREATE (p:Post {
+        postId: '0b994dfb-9fc5-44f3-a8fc-b0fd703c6975',
+        publishedAt: 1463960709998,
+        title: 'Hello World',
+        body: 'La la la la.',
+        slug: '/@jared/hello-world' })
+      CREATE (uj)-[w:PUBLISHED {liked_at: timestamp()}]->(p)
+      CREATE (uj)-[l:LIKED {liked_at: timestamp()}]->(p)`
     db.cypher({
-      query: 'MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n, r'
-    })
-    .then(() => {
-      return db.cypher({
-        query: 'CREATE (u:User { props })',
-        params: {
-          props: {
-            username: 'jared',
-            password: 'neo4j',
-            email: 'jared@palmer.net'
-          }
-        }
-      })
-    }).then(() => {
-      return db.cypher({
-        query: 'CREATE (u:User { props })',
-        params: {
-          props: {
-            username: 'brent',
-            password: 'neo4j',
-            email: 'brent@palmer.net'
-          }
-        }
-      })
-    }).then(() => done())
+      query,
+    }).then(() => done()).catch(e => done(e))
   })
 
   afterEach(done => {
     db.cypher({
-      query: 'MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n, r'
-    }).then(() => done())
+      query: 'MATCH (n) DETACH DELETE n'
+    }).then(() => done()).catch(e => done(e))
   })
 
-  describe('Class Methods', done => {
+  // describe('Class Methods', done => {
     describe('create', done => {
       it('should create a new user', done => {
         const props = {
@@ -75,10 +78,10 @@ describe('User Model', () => {
         }).catch(e => done(e))
       })
     })
-  })
+  // })
 
-  describe('Instance Methods', done => {
-    describe('friend', done => {
+  // describe('Instance Methods', done => {
+    describe('follow', done => {
       it('should follow the target user', done => {
         User.get('jared').then(user => {
           expect(user.username).to.equal('jared')
@@ -96,20 +99,19 @@ describe('User Model', () => {
         }).catch(e => done(e))
       })
     })
+
     describe('post', done => {
       it('should post a status update', done => {
-        const date = Date.now()
-        User.get('jared').then(user => {
-          expect(user.username).to.equal('jared')
-          user.post({
-            date:
-            text: 'jared status 1',
-          }).then(post => {
-            expect(post).to.equal('jared')
-          })
-          done()
+        User.get('brent').then(user => {
+          expect(user.username).to.equal('brent')
+          return user.post({
+              title: 'jared status 1',
+              body: 'Hello world'
+            })
+        }).then(post => {
+            expect(post.title).to.equal('jared status 1')
+            return done()
         }).catch(e => done(e))
-      })
     })
   })
 })
