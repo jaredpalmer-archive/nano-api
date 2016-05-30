@@ -144,11 +144,10 @@ User.create = (props) => {
 
 // Retrieve a list of all Users
 User.getAll = ({ limit = 25, skip = 0 }) => {
-  const query = 'MATCH (user:User) RETURN user LIMIT { limit }'
+  const query = 'MATCH (user:User) RETURN user SKIP { skip } LIMIT { limit } '
   const params = { limit, skip }
-  return db.cypher({ query, params, lean: true }, (err, results) => {
-    return results.map(record => new User(record.user))
-  })
+  return db.cypher({ query, params, lean: true})
+    .then(results => results.map(record => new User(record.user)))
 }
 
 // Find one User by username

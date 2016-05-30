@@ -3,12 +3,9 @@ process.env.NODE_ENV = 'test'
 import chai, { expect } from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import chaiHttp from 'chai-http'
-import Email from '../email/model'
+import Email from './model'
 // import seed from './seed'
 import db from '../db'
-import server from '../server'
-chai.use(chaiHttp)
-chai.use(chaiAsPromised)
 
 describe('Email model', () => {
 
@@ -16,7 +13,7 @@ describe('Email model', () => {
   beforeEach(done => {
     const id = 'e7878c21-e03e-4fde-9322-1dc8e959c561'
     db.cypher({
-      query: 'MATCH (n) DELETE n'
+      query: 'MATCH (n) DETACH DELETE n'
     })
     .then(() => {
       return db.cypher({
@@ -29,7 +26,7 @@ describe('Email model', () => {
           }
         }
       })
-    }).then(() => done())
+    }).then(() => done()).catch(e => done(e))
   })
 
   describe('Email.create', (done) => {
@@ -59,9 +56,8 @@ describe('Email model', () => {
       })
       .catch(ValidationError => {
         expect(ValidationError.message).to.deep.equal('child "preheader" fails because ["preheader" must be a string]')
-        done()
-      })
-      .catch(e => done(e))
+        return done()
+      }).catch(e => done(e))
     })
 
     it('should throw an error if given incomplete data', (done) => {
@@ -73,7 +69,7 @@ describe('Email model', () => {
       })
       .catch(AssertionError => {
         expect(AssertionError.message).to.deep.equal('child "preheader" fails because ["preheader" is required]')
-        done()
+        return done()
       })
       .catch(e => done(e))
     })

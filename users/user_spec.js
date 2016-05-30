@@ -78,6 +78,19 @@ describe('User Model', () => {
         }).catch(e => done(e))
       })
     })
+
+    describe('getAll', done => {
+      it('should get all users', done => {
+        User.getAll({limit: 25, skip: 0}).then(users => {
+          // expect(users).to.be.a('object')
+          expect(users).to.be.a('array')
+          expect(users[0].username).to.be.a('string')
+          expect(users[0].password).to.be.a('string')
+          expect(users[0].email).to.be.a('string')
+          done()
+        }).catch(e => done(e))
+      })
+    })
   // })
 
   // describe('Instance Methods', done => {
@@ -105,11 +118,14 @@ describe('User Model', () => {
         User.get('brent').then(user => {
           expect(user.username).to.equal('brent')
           return user.post({
-              title: 'jared status 1',
+              title: 'My First Post!',
               body: 'Hello world'
             })
         }).then(post => {
-            expect(post.title).to.equal('jared status 1')
+            expect(post).to.be.a('object')
+            expect(post.title).to.equal('My First Post!')
+            expect(post.body).to.equal('Hello world')
+            expect(post.slug).to.equal('/@brent/my-first-post')
             return done()
         }).catch(e => done(e))
     })
