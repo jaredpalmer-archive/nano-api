@@ -1,0 +1,12 @@
+{
+  "name": "twork-api",
+  "scripts": {
+  
+  },
+  "env": {
+  
+  },
+  "addons": [
+    "graphenedb"
+  ]
+}
