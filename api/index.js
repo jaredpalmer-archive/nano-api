@@ -2,9 +2,11 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import morgan from 'morgan'
 import userRoutes from '../users/routes'
+import db from '../db'
 
-function api () {
+export default function () {
   const server = express()
+
   server.use(bodyParser.json())
   server.use(bodyParser.urlencoded({ extended: true }))
   server.use(morgan('dev'))
@@ -17,5 +19,3 @@ function api () {
 
   return server
 }
-
-export default api

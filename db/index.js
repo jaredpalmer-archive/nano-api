@@ -1,12 +1,6 @@
 import neo4j from 'neo4j'
 import Bluebird from 'bluebird'
-import config from '../config'
-
-const USER = config.NEO4J_USER
-const PASSWORD = config.NEO4J_PASSWORD
-const URL = config.NEO4J_URL
-
-const db = new neo4j.GraphDatabase(`http://${USER}:${PASSWORD}@${URL}`)
+const db = new neo4j.GraphDatabase(process.env.GRAPHENEDB_URL)
 
 db.cypher = Bluebird.promisify(db.cypher)
 

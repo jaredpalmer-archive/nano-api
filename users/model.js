@@ -11,22 +11,13 @@ Joi.validate = Promise.promisify(Joi.validate)
 class User {
   constructor (node) {
     this.username = node.username
-    this._password = node.password
+    this.password = node.password
     this.email = node.email
-
     this.update = this.update.bind(this)
     this.follow = this.follow.bind(this)
     this.unfollow = this.unfollow.bind(this)
     this.like = this.like.bind(this)
     this.post = this.post.bind(this)
-  }
-
-  get password () {
-    return this._password
-  }
-
-  set password (value) {
-
   }
 
   verifyPassword (password) {
@@ -95,7 +86,7 @@ class User {
       title: props.title,
       body: props.body,
       postId: uuid.v4(),
-      slug: `/@${this.username}/${slug(props.title.toLocaleLowerCase())}`
+      slug: `/@${this.username}/${slug(props.title.toLowerCase())}`
     }
 
     return db.cypher({ query, params, lean: true })
@@ -127,8 +118,6 @@ class User {
     return db.cypher({ query, params: props, lean: true })
   }
 
-  // TODO: getFeed
-
 }
 
 // User Schema
@@ -145,9 +134,8 @@ User.create = (props) => {
   const query = `
     CREATE (user:User { props })
     RETURN user`
-  const salt = bcrypt.genSaltSync(10)
-  const hash = bcrypt.hashSync(props.password, salt)
-  props.password = hash
+  // const hash =  bcrypt.hashSync(props.password, 10);
+  // props.password = hash
   return Joi.validate(props, UserSchema)
     .then(props => db.cypher({ query, params: { props }, lean: true }))
     .then(results => new User(results[0].user))
@@ -155,13 +143,10 @@ User.create = (props) => {
 
 // Retrieve a list of all Users
 User.getAll = ({ limit = 25, skip = 0 }) => {
-  const query = 'MATCH (user:User) RETURN user LIMIT { limit }'
+  const query = 'MATCH (user:User) RETURN user SKIP { skip } LIMIT { limit } '
   const params = { limit, skip }
-  return db.cypher({ query, params, lean: true })
-  .then(results => {
-    return results.map(record => new User(record.user))
-    // return results.map(record => new User(record))
-  })
+  return db.cypher({ query, params, lean: true})
+    .then(results => results.map(record => new User(record.user)))
 }
 
 // Find one User by username
