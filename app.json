@@ -1,12 +1,13 @@
 {
   "name": "twork-api",
   "scripts": {
-  
+
   },
   "env": {
-  
+
   },
   "addons": [
-    "graphenedb"
+    "graphenedb",
+    "cloudamqp"
   ]
 }
