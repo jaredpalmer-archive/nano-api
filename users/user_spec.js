@@ -1,15 +1,8 @@
 process.env.NODE_ENV = 'test'
 
-import chai, { expect } from 'chai'
-import chaiAsPromised from 'chai-as-promised'
-import chaiHttp from 'chai-http'
+import { expect } from 'chai'
 import db from '../db'
 import User from './model'
-import api from '../api'
-const server = api()
-//
-// chai.use(chaiHttp)
-// chai.use(chaiAsPromised)
 
 describe('User Model', () => {
 
@@ -81,8 +74,7 @@ describe('User Model', () => {
 
     describe('getAll', done => {
       it('should get all users', done => {
-        User.getAll({limit: 25, skip: 0}).then(users => {
-          // expect(users).to.be.a('object')
+        User.getAll({ limit: 25, skip: 0 }).then(users => {
           expect(users).to.be.a('array')
           expect(users[0].username).to.be.a('string')
           expect(users[0].password).to.be.a('string')

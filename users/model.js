@@ -13,7 +13,6 @@ class User {
     this.username = node.username
     this.password = node.password
     this.email = node.email
-
     this.update = this.update.bind(this)
     this.follow = this.follow.bind(this)
     this.unfollow = this.unfollow.bind(this)
