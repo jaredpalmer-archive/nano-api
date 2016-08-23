@@ -1,39 +1,25 @@
-import http from 'http'
-import throng from 'throng'
-import logger from 'logfmt'
-import jackrabbit from 'jackrabbit'
+const express = require('express')
+const http = require('http')
+const morgan = require('morgan')
+const proxy = require('http-proxy')
 
-http.globalAgent.maxSockets = Infinity
+const app = express()
 
-import api from './api'
+app.use(morgan('dev'))
+app.use(express.static('public'))
 
-const RABBIT_URL = process.env.CLOUDAMQP_URL || 'amqp://guest:guest@localhost:5672'
-const PORT = process.env.PORT || 3000
-const SERVICE_TIME = process.env.SERVICE_TIME || 1000
-const isDeveloping = process.env.NODE_ENV === 'development'
+app.get('/api', (req, res) => {
+  console.log(req.get('X-My-Custom-Param-1'));
+  res.send('Hello world!')
+})
+app.get('/api/me', (req, res) => {
+  const tenant = req.get('X-My-Custom-Param-1') || 'no tenant'
+  res.send(tenant)
+})
 
-throng({ workers: 1, lifetime: Infinity }, start)
+const server = http.createServer(app)
 
-function start () {
-  logger.log({ type: 'info', message: 'starting server' })
-
-  let server
-  const broker = jackrabbit(RABBIT_URL, 1)
-
-  broker.once('connected', listen)
-  broker.once('disconnected', exit.bind(this, 'disconnected'))
-
-  process.on('SIGTERM', exit)
-
-  function listen () {
-    const app = api(SERVICE_TIME, isDeveloping)
-    server = http.createServer(app)
-    server.listen(PORT)
-  }
-
-  function exit (reason) {
-    logger.log({ type: 'info', message: 'closing server', reason: reason })
-    if (server) server.close(process.exit.bind(process))
-    else process.exit()
-  }
-}
+server.listen(process.env.PORT || 3000, (err) => {
+  if (err) console.log(err)
+  console.log("server listening")
+})
