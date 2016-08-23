@@ -7,7 +7,7 @@ const app = express()
 app.use(morgan('dev'))
 app.use(express.static('public'))
 app.use((req, res, next) => {
-  req.tenant = process.env.NODE_ENV == 'production' ? req.headers.host.split['.'][0] : 'test'
+  req.tenant = process.env.NODE_ENV == 'production' ? req.headers.host.split('.')[0] : 'test'
   next()
 })
 
