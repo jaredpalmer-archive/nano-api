@@ -6,11 +6,15 @@ const app = express()
 
 app.use(morgan('dev'))
 app.use(express.static('public'))
+app.use((req, res, next) => {
+  req.set('tenant') = req.headers.host.domain.split['.'][0]
+  next()
+})
 app.get('/', (req, res) => {
   res.send('Hello world!')
 })
 app.get('/api/me', (req, res) => {
-  const tenant = req.get('X-My-Custom-Param-1') || 'no tenant'
+  const tenant = req.get('tenant') || 'no tenant'
   console.log(tenant)
   res.send(tenant)
 })
