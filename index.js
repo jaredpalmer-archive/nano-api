@@ -7,9 +7,10 @@ const app = express()
 app.use(morgan('dev'))
 app.use(express.static('public'))
 app.use((req, res, next) => {
-  req.tenant = req.headers.host.domain.split['.'][0]
+  req.tenant = process.env.NODE_ENV == 'production' ? req.headers.host.split['.'][0] : 'test'
   next()
 })
+
 app.get('/', (req, res) => {
   res.send('Hello world!')
 })
