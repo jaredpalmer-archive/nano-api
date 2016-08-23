@@ -6,7 +6,7 @@ const app = express()
 
 app.use(morgan('dev'))
 app.use(express.static('public'))
-app.get('/api', (req, res) => {
+app.get('/', (req, res) => {
   res.send('Hello world!')
 })
 app.get('/api/me', (req, res) => {
